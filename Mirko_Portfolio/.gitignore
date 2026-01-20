@@ -1,0 +1,69 @@
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### Node.js (Next.js) ###
+node_modules/
+.next/
+out/
+build/
+dist/
+.npm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+### Docker ###
+.docker/
+# Ignore local data volumes so you don't push your actual database records
+pgdata/
+db-data/
+
+### Environment & Secrets ###
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env.bak
+# Any database password files
+db/password.txt
+
+### OS Specific ###
+.DS_Store
+Thumbs.db
