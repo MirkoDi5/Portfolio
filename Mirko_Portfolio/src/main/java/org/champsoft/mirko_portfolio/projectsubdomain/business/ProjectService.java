@@ -11,4 +11,7 @@ public interface ProjectService {
     List<Projects> getAll();
     Projects getProjectById(String projectId);
     ProjectResponseDTO updateProject(String projectId, ProjectRequestDTO dto);
+    ProjectResponseDTO createProject(ProjectRequestDTO dto);
+    void deleteProject(String projectId);
+
 }

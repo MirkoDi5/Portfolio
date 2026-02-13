@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.swing.*;
+import java.awt.*;
+
 @Entity
 @Getter
 @Setter
@@ -25,10 +28,21 @@ public class Projects {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "link")
+    private String link;
+
+    @Column(name = "prod_link")
+    private String prodLink;
+
+
+
     // Constructor without id (for inserting new entities)
-    public Projects(String projectId, String name, String description) {
+    public Projects(String projectId, String name, String description, String link, String prodLink) {
         this.projectId = projectId;
         this.name = name;
         this.description = description;
+        this.link = link;
+        this.prodLink = prodLink;
+
     }
 }

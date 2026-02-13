@@ -1,4 +1,4 @@
-package org.champsoft.mirko_portfolio.projectsubdomain.presentation;
+package org.champsoft.mirko_portfolio.PersonalInfoSubdomain.presentation.Work;
 
 
 import lombok.AllArgsConstructor;
@@ -10,22 +10,19 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProjectResponseDTO {
+public class WorkResponseDTO {
 
     private Long id;
 
-    private String projectId;
+    private String workId;
 
     private String name;
 
+    private String workName;
+
+    private String time;
+
     private String description;
-
-    private String link;
-
-    private String prodLink;
-
-
-
 
 
 }
