@@ -18,5 +18,11 @@ public class ProjectRequestDTO {
 
     private String description;
 
+    private String link;
+
+    private String prodLink;
+
+
+
 
 }

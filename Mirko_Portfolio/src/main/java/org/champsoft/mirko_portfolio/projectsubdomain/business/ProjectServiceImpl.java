@@ -1,5 +1,8 @@
 package org.champsoft.mirko_portfolio.projectsubdomain.business;
 
+import org.champsoft.mirko_portfolio.PersonalInfoSubdomain.data.education.Education;
+import org.champsoft.mirko_portfolio.PersonalInfoSubdomain.presentation.education.EducationRequestDTO;
+import org.champsoft.mirko_portfolio.PersonalInfoSubdomain.presentation.education.EducationResponseDTO;
 import org.champsoft.mirko_portfolio.projectsubdomain.data.ProjectRepository;
 import org.champsoft.mirko_portfolio.projectsubdomain.data.Projects;
 import org.champsoft.mirko_portfolio.projectsubdomain.presentation.ProjectRequestDTO;
@@ -53,6 +56,9 @@ public class ProjectServiceImpl implements ProjectService {
                 project.setProjectId(dto.getProjectId());
                 project.setName(dto.getName());
                 project.setDescription(dto.getDescription());
+                project.setLink(dto.getLink());
+                project.setProdLink(dto.getProdLink());
+
 
                 Projects updatedProjects = repo.save(project);
 
@@ -60,11 +66,60 @@ public class ProjectServiceImpl implements ProjectService {
                         updatedProjects.getId(),
                         updatedProjects.getProjectId(),
                         updatedProjects.getName(),
-                        updatedProjects.getDescription()
+                        updatedProjects.getDescription(),
+                        updatedProjects.getLink(),
+                        updatedProjects.getProdLink()
 
 
                 );
 
     }
+
+
+    @Override
+    public ProjectResponseDTO createProject(ProjectRequestDTO dto) {
+
+        if (dto == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Project request must not be null"
+            );
+        }
+
+        Projects project = new Projects();
+        project.setProjectId(dto.getProjectId());
+        project.setName(dto.getName());
+        project.setDescription(dto.getDescription());
+        project.setLink(dto.getLink());
+        project.setProdLink(dto.getProdLink());
+
+
+        Projects savedProject = repo.save(project);
+
+        return new ProjectResponseDTO(
+                savedProject.getId(),
+                savedProject.getProjectId(),
+                savedProject.getName(),
+                savedProject.getDescription(),
+                savedProject.getLink(),
+                savedProject.getProdLink()
+
+        );
+    }
+
+    @Override
+    public void deleteProject(String projectId) {
+
+        Projects project = repo.findById(projectId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Project not found with id: " + projectId
+                ));
+
+        repo.delete(project);
+    }
+
+
+
 
 }
