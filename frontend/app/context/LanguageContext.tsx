@@ -17,8 +17,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState("en");
 
   useEffect(() => {
-    const stored = typeof window !== "undefined" ? localStorage.getItem("lang") : null;
-    if (stored && (stored === "en" || stored === "fr")) setLangState(stored);
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("lang");
+      if (stored && (stored === "en" || stored === "fr")) {
+        setLangState(stored);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const setLang = (newLang: string) => {
