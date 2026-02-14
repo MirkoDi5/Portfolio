@@ -25,7 +25,7 @@ export default function Home() {
         <p className="max-w-2xl text-lg text-zinc-700 dark:text-zinc-300 mb-8 animate-fade-in delay-200">
           {t('heroText')}
         </p>
-        <div className="flex flex-row gap-4 justify-center animate-fade-in delay-300">
+        <div className="flex flex-row gap-4 justify-center animate-fade-in delay-300 flex-wrap">
           <a
             href="https://github.com/"
             target="_blank"
@@ -51,48 +51,38 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Skills Section */}
-      <section className="max-w-5xl mx-auto py-16 px-4">
-        <h2 className="text-3xl font-bold text-teal-900 dark:text-teal-200 mb-8 text-center">{t('skills')}</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 justify-items-center">
-          <div className="flex flex-col items-center">
-            <span className="text-4xl">💻</span>
-            <span className="mt-2 text-lg font-medium">React</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="text-4xl">⚡</span>
-            <span className="mt-2 text-lg font-medium">Next.js</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="text-4xl">🎨</span>
-            <span className="mt-2 text-lg font-medium">Tailwind</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="text-4xl">📝</span>
-            <span className="mt-2 text-lg font-medium">TypeScript</span>
-          </div>
+      {/* Info Cards Section */}
+      <section className="flex flex-col md:flex-row gap-8 justify-center items-stretch mt-12 px-4 max-w-4xl mx-auto">
+        <div className="flex-1 bg-white dark:bg-zinc-900 rounded-xl shadow-lg p-8 flex flex-col items-center text-center border border-green-200 dark:border-green-800">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 text-green-500 mb-4">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75A2.25 2.25 0 0 0 14.25 4.5h-4.5A2.25 2.25 0 0 0 7.5 6.75v3.75m9 0V17.25A2.25 2.25 0 0 1 14.25 19.5h-4.5A2.25 2.25 0 0 1 7.5 17.25V10.5m9 0h-9" />
+          </svg>
+          <h3 className="text-xl font-bold mb-2">{t('viewCV') || 'Download CV'}</h3>
+          <p className="mb-4 text-zinc-600 dark:text-zinc-300">{t('cvDescription') || 'Download my up-to-date CV in Word format.'}</p>
+          <a
+            href="/Mirko%20-%20CV.docx"
+            download
+            className="inline-block px-6 py-2 rounded-full bg-green-500 text-white font-semibold shadow hover:bg-green-600 transition-colors"
+            aria-label="Download CV"
+          >
+            {t('downloadNow') || 'Download Now'}
+          </a>
+        </div>
+        <div className="flex-1 bg-white dark:bg-zinc-900 rounded-xl shadow-lg p-8 flex flex-col items-center text-center border border-blue-200 dark:border-blue-800">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 text-blue-500 mb-4">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25V6.75m6 10.5V6.75m-9 0h12a2.25 2.25 0 0 1 2.25 2.25v6a2.25 2.25 0 0 1-2.25 2.25H3.75A2.25 2.25 0 0 1 1.5 15V9a2.25 2.25 0 0 1 2.25-2.25z" />
+          </svg>
+          <h3 className="text-xl font-bold mb-2">{t('projects') || 'Projects'}</h3>
+          <p className="mb-4 text-zinc-600 dark:text-zinc-300">{t('projectsDescription') || 'Explore my portfolio projects and see what I have built.'}</p>
+          <a
+            href="/projects"
+            className="inline-block px-6 py-2 rounded-full bg-blue-500 text-white font-semibold shadow hover:bg-blue-600 transition-colors"
+            aria-label="Go to Projects"
+          >
+            {t('seeProjects') || 'See Projects'}
+          </a>
         </div>
       </section>
-
-      {/* Projects Section */}
-      <section className="max-w-5xl mx-auto py-16 px-4">
-        <h2 className="text-3xl font-bold text-blue-900 dark:text-blue-200 mb-8 text-center">{t('projects')}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-lg p-6 border border-zinc-100 dark:border-zinc-700">
-            <h3 className="text-xl font-semibold text-blue-800 dark:text-blue-100 mb-2">Portfolio Website</h3>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">A modern portfolio built with Next.js, React, and Tailwind CSS.</p>
-            <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-300 font-semibold hover:underline">View Code</a>
-          </div>
-          <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-lg p-6 border border-zinc-100 dark:border-zinc-700">
-            <h3 className="text-xl font-semibold text-blue-800 dark:text-blue-100 mb-2">CRUD Modal System</h3>
-            <p className="text-zinc-700 dark:text-zinc-300 mb-4">Reusable modal component for create, read, update, and delete operations.</p>
-            <a href="https://github.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-300 font-semibold hover:underline">View Code</a>
-          </div>
-        </div>
-      </section>
-
-
-
     </main>
   );
 }
