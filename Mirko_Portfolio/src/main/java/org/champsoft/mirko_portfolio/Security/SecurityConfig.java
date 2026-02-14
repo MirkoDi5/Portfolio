@@ -29,12 +29,19 @@ public class SecurityConfig {
                 // ✅ CORS configured ONLY here (remove CorsConfig class!)
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(List.of("http://localhost:3000"));
+                    config.setAllowedOrigins(List.of(
+                            "http://localhost:3000",
+                            "https://mirkos-portfolio-woad.vercel.app",
+                            "https://mirkos-portfolio-git-main-mirko-di-criscios-projects.vercel.app",
+                            "https://mirkos-portfolio-9jyt0ubhm-mirko-di-criscios-projects.vercel.app"
+                    ));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("*"));
-                    config.setAllowCredentials(false); // IMPORTANT
+                    config.setExposedHeaders(List.of("Authorization"));
+                    config.setAllowCredentials(true); // ✅ Must be true
                     return config;
                 }))
+
 
                 .authorizeHttpRequests(auth -> auth
 

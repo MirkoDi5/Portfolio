@@ -16,7 +16,9 @@ public class CorsConfig {
                 registry.addMapping("/**")
                         .allowedOrigins(
                                 "http://localhost:3000",
-                                "https://mirkos-portfolio-woad.vercel.app"
+                                "https://mirkos-portfolio-woad.vercel.app",
+                                "https://mirkos-portfolio-git-main-mirko-di-criscios-projects.vercel.app",
+                                "https://mirkos-portfolio-9jyt0ubhm-mirko-di-criscios-projects.vercel.app"
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
