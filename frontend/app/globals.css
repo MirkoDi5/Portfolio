@@ -3,9 +3,7 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
 
-@theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -23,4 +21,26 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popInModal {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fadeInModal {
+  animation: fadeInModal 0.3s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+
+.animate-modalPopIn {
+  animation: popInModal 0.3s cubic-bezier(0.4,0,0.2,1) forwards;
 }
