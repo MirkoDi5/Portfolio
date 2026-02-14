@@ -39,11 +39,18 @@
   "loadingWork": "Loading work experience...",
   "loadingEducation": "Loading education...",
   "edit": "Edit",
-  "add": "Add",
-  "skillName": "Skill Name"
-  ,
+  "skillName": "Skill Name",
   "testimonialsTitle": "Testimonials",
-  "addTestimony": "+ Add Testimony",
+    "contactsList": "Contacts List",
+    "loadingContacts": "Loading contacts...",
+    "noContactsFound": "No contacts found.",
+    "failedToLoadContacts": "Failed to load contacts.",
+    "failedToSendMessage": "Failed to send message. Please try again.",
+    "contactIntro": "I'd love to hear from you! Fill out the form below and I'll get back to you soon.",
+    "profanityDetected": "Profanity detected",
+    "sendMessage": "Send Message",
+    "email": "Email",
+    "addTestimony": "+ Add Testimony",
   "submitTestimonial": "Submit a Testimonial",
   "firstName": "First Name",
   "lastName": "Last Name",
@@ -69,9 +76,14 @@
   "failedToApproveTestimonial": "Failed to approve testimonial",
   "failedToRejectTestimonial": "Failed to reject testimonial",
   "failedToDeleteTestimonial": "Failed to delete testimonial",
+  "failedToDeleteContact": "Failed to delete contact",
   "firstNamePlaceholder": "ex: John",
   "lastNamePlaceholder": "ex: Doe (optional)",
-  "commentPlaceholder": "ex: Mirko was a great teammate and always delivered on time."
+  "commentPlaceholder": "ex: Mirko was a great teammate and always delivered on time.",
+  "cvDescription": "Download my up-to-date CV in Word format.",
+  "downloadNow": "Download Now",
+  "projectsDescription": "Explore my portfolio projects and see what I have built.",
+  "seeProjects": "See Projects"
 }
 
 

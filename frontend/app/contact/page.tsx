@@ -1,21 +1,23 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useLanguage } from "../context/LanguageContext";
 import { useAuth0 } from "@auth0/auth0-react";
 import { contactsApi, ContactsResponseDTO } from "../contactsApi";
 import profanityList from "../profanityList";
 
 export default function ContactPage() {
-  const { user, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
+  const { user, isLoading, getAccessTokenSilently } = useAuth0();
+  const { t } = useLanguage();
   const roles = user && user["https://api.portfolio.com/roles"];
   const isUser = Array.isArray(roles) && roles.includes("user");
   const isAdmin = Array.isArray(roles) && roles.includes("admin");
 
   const [form, setForm] = useState({ name: "", lastName: "", email: "", message: "" });
-  const [submitted, setSubmitted] = useState(false);
   const [contacts, setContacts] = useState<ContactsResponseDTO[]>([]);
   const [contactsLoading, setContactsLoading] = useState(false);
   const [contactsError, setContactsError] = useState<string | null>(null);
 
+  // Only fetch contacts when admin status changes or on mount, not on language change
   useEffect(() => {
     if (isAdmin) {
       setContactsLoading(true);
@@ -26,12 +28,14 @@ export default function ContactPage() {
           const data = await contactsApi.getAllContacts(token);
           setContacts(data);
         } catch {
+          // Use a static string here to avoid unstable dependency
           setContactsError("Failed to load contacts.");
         } finally {
           setContactsLoading(false);
         }
       })();
     }
+
   }, [isAdmin, getAccessTokenSilently]);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -49,11 +53,9 @@ export default function ContactPage() {
           email: form.email,
           comment: form.message,
         }, token);
-        setSubmitted(true);
         setForm({ name: "", lastName: "", email: "", message: "" });
       } catch {
-        setSubmitted(false);
-        alert("Failed to send message. Please try again.");
+        alert(t("failedToSendMessage") || "Failed to send message. Please try again.");
       }
     })();
   }
@@ -65,7 +67,7 @@ export default function ContactPage() {
   }
 
   if (isLoading) {
-    return <div className="text-center py-12">Loading...</div>;
+    return <div className="text-center py-12">{t("loading")}</div>;
   }
 
   if (isUser) {
@@ -77,43 +79,43 @@ export default function ContactPage() {
           <div className="relative z-10 p-8 md:p-10">
             <div className="flex flex-col items-center mb-8">
               <div className="bg-blue-200 dark:bg-blue-900 p-3 rounded-full mb-3 shadow text-3xl">✉️</div>
-              <h1 className="text-3xl md:text-4xl font-extrabold mb-2 text-center text-blue-900 dark:text-blue-50 tracking-tight drop-shadow">Contact</h1>
-              <p className="text-blue-600 dark:text-blue-200 text-center text-base max-w-md">I&apos;d love to hear from you! Fill out the form below and I&apos;ll get back to you soon.</p>
+              <h1 className="text-3xl md:text-4xl font-extrabold mb-2 text-center text-blue-900 dark:text-blue-50 tracking-tight drop-shadow">{t("contact")}</h1>
+              <p className="text-blue-600 dark:text-blue-200 text-center text-base max-w-md">{t("contactIntro") || "I'd love to hear from you! Fill out the form below and I'll get back to you soon."}</p>
             </div>
             {profanity.length > 0 && (
               <div className="mb-4 p-3 bg-red-100 text-red-800 rounded text-center font-medium shadow">
-                Profanity detected: {profanity.join(", ")}
+                {t("profanityDetected") || "Profanity detected"}: {profanity.join(", ")}
               </div>
             )}
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-2 font-semibold text-blue-700 dark:text-blue-200">Name</label>
+                  <label className="block mb-2 font-semibold text-blue-700 dark:text-blue-200">{t("firstName")}</label>
                   <input
                     type="text"
                     name="name"
                     value={form.name}
                     onChange={handleChange}
-                    placeholder="ex: John"
+                    placeholder={t("firstNamePlaceholder")}
                     className="w-full border border-blue-300 dark:border-blue-600 px-3 py-2 rounded-xl bg-blue-50 dark:bg-blue-900 text-blue-900 dark:text-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all shadow-sm"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block mb-2 font-semibold text-blue-700 dark:text-blue-200">Last Name</label>
+                  <label className="block mb-2 font-semibold text-blue-700 dark:text-blue-200">{t("lastName")}</label>
                   <input
                     type="text"
                     name="lastName"
                     value={form.lastName}
                     onChange={handleChange}
-                    placeholder="ex: Doe"
+                    placeholder={t("lastNamePlaceholder")}
                     className="w-full border border-blue-300 dark:border-blue-600 px-3 py-2 rounded-xl bg-blue-50 dark:bg-blue-900 text-blue-900 dark:text-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all shadow-sm"
                     required
                   />
                 </div>
               </div>
               <div>
-                <label className="block mb-2 font-semibold text-blue-700 dark:text-blue-200">Email</label>
+                <label className="block mb-2 font-semibold text-blue-700 dark:text-blue-200">{t("email") || "Email"}</label>
                 <input
                   type="email"
                   name="email"
@@ -125,12 +127,12 @@ export default function ContactPage() {
                 />
               </div>
               <div>
-                <label className="block mb-2 font-semibold text-blue-700 dark:text-blue-200">Message</label>
+                <label className="block mb-2 font-semibold text-blue-700 dark:text-blue-200">{t("comment") || t("message") || "Message"}</label>
                 <textarea
                   name="message"
                   value={form.message}
                   onChange={handleChange}
-                  placeholder="ex: I would like to connect about..."
+                  placeholder={t("commentPlaceholder") || "ex: I would like to connect about..."}
                   className="w-full border border-blue-300 dark:border-blue-600 px-3 py-2 rounded-xl bg-blue-50 dark:bg-blue-900 text-blue-900 dark:text-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all shadow-sm resize-none"
                   rows={4}
                   required
@@ -140,7 +142,7 @@ export default function ContactPage() {
                 type="submit"
                 className="w-full bg-gradient-to-r from-blue-500 to-blue-700 text-white px-6 py-3 rounded-2xl font-bold text-lg shadow-xl hover:from-blue-600 hover:to-blue-800 transition-colors"
               >
-                Send Message
+                {t("sendMessage") || t("submit") || "Send Message"}
               </button>
             </form>
           </div>
@@ -150,23 +152,54 @@ export default function ContactPage() {
   }
 
   if (isAdmin) {
+    async function handleDeleteContact(id: string | number) {
+      try {
+        const token = await getAccessTokenSilently();
+        await contactsApi.deleteContact(String(id), token);
+        setContacts((prev) => prev.filter((c) => String(c.id) !== String(id)));
+      } catch {
+        alert(t("failedToDeleteContact") || "Failed to delete contact.");
+      }
+    }
     return (
       <main className="pt-0 px-4 min-h-[80vh] bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 dark:from-blue-900 dark:via-blue-950 dark:to-blue-800 flex items-start justify-center">
         <div className="w-full max-w-4xl mx-auto mt-8">
-          <h1 className="text-3xl md:text-4xl font-extrabold mb-12 text-center text-blue-900 dark:text-blue-50 tracking-tight drop-shadow">Contacts List</h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold mb-12 text-center text-blue-900 dark:text-blue-50 tracking-tight drop-shadow">{t("contactsList") || "Contacts List"}</h1>
           <div className="bg-white/90 dark:bg-zinc-800/90 rounded-3xl shadow-2xl border border-blue-100 dark:border-blue-700 p-0 relative">
             <div className="absolute -inset-2 rounded-3xl bg-gradient-to-br from-blue-200 via-blue-100 to-blue-300 dark:from-blue-900 dark:via-blue-950 dark:to-blue-800 blur-lg opacity-40 z-0"></div>
             <div className="relative z-10 p-6 md:p-8">
-              {contactsLoading && <div className="text-center text-blue-500">Loading contacts...</div>}
+              {contactsLoading && <div className="text-center text-blue-500">{t("loadingContacts") || t("loading") || "Loading contacts..."}</div>}
               {contactsError && <div className="text-center text-red-500">{contactsError}</div>}
               {!contactsLoading && !contactsError && contacts.length === 0 && (
-                <div className="text-center text-blue-400">No contacts found.</div>
+                <div className="text-center text-blue-400">{t("noContactsFound") || "No contacts found."}</div>
               )}
               {!contactsLoading && !contactsError && contacts.length > 0 && (
                 <div className="max-h-96 overflow-y-auto">
                   <ul className="divide-y divide-blue-200 dark:divide-blue-700">
                     {contacts.map((c) => (
-                      <li key={c.id} className="mb-6 p-6 bg-white/90 rounded-2xl shadow flex flex-col gap-2 border border-blue-100">
+                      <li key={c.id} className="mb-6 p-6 bg-white/90 rounded-2xl shadow flex flex-col gap-2 border border-blue-100 relative group">
+                        <div className="absolute top-4 right-4 flex gap-2 z-10">
+                          <button
+                            onClick={() => handleDeleteContact(c.id)}
+                            className="text-red-500 hover:text-red-700 text-xl font-bold opacity-80 hover:opacity-100 transition-opacity"
+                            title={t("delete") || "Delete"}
+                            aria-label={t("delete") || "Delete"}
+                          >
+                            &#10006;
+                          </button>
+                          <a
+                            href="https://outlook.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-500 hover:text-blue-700 text-xl font-bold opacity-80 hover:opacity-100 transition-opacity"
+                            title="Open Outlook"
+                            aria-label="Open Outlook"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                              <path d="M2 6.75A2.25 2.25 0 0 1 4.25 4.5h15.5A2.25 2.25 0 0 1 22 6.75v10.5A2.25 2.25 0 0 1 19.75 19.5H4.25A2.25 2.25 0 0 1 2 17.25V6.75zm2.25-.75a.75.75 0 0 0-.75.75v.638l8.25 5.5 8.25-5.5V6.75a.75.75 0 0 0-.75-.75H4.25zm16.5 2.362-7.72 5.153a.75.75 0 0 1-.82 0L4.25 8.362V17.25c0 .414.336.75.75.75h15.5a.75.75 0 0 0 .75-.75V8.362z" />
+                            </svg>
+                          </a>
+                        </div>
                         <div className="font-bold text-blue-700 text-xl">{c.name} {c.lastName}</div>
                         <div className="text-blue-500 text-base">{c.email}</div>
                         <div className="text-blue-900 text-base mt-2">{c.comment}</div>

@@ -33,7 +33,21 @@ export default function Navbar() {
           <li><Link href="/projects" className="hover:text-blue-600 transition-colors">{t('projects')}</Link></li>
           <li><Link href="/about" className="hover:text-blue-600 transition-colors">{t('about')}</Link></li>
           <li><Link href="/testimonials" className="hover:text-blue-600 transition-colors">{t('testimonials')}</Link></li>
-          <li><Link href="/contact" className="hover:text-blue-600 transition-colors">{t('contact')}</Link></li>
+          <li>
+            <button
+              className="hover:text-blue-600 transition-colors bg-transparent border-none p-0 m-0 text-inherit cursor-pointer"
+              onClick={() => {
+                if (!isAuthenticated) {
+                  loginWithRedirect();
+                } else {
+                  window.location.href = "/contact";
+                }
+              }}
+              style={{ background: "none", border: "none" }}
+            >
+              {t('contact')}
+            </button>
+          </li>
         </ul>
         {!isAuthenticated ? (
           <>
