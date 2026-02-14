@@ -27,7 +27,10 @@ export interface WorkResponseDTO {
 }
 
 // Use backend URL directly for development
-const API_BASE = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/work`;
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL
+    ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1/work`
+    : "http://localhost:8080/api/v1/work";
 
 export const workApi = {
   async getAll(token?: string): Promise<Work[]> {
