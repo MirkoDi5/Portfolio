@@ -76,3 +76,12 @@ VALUES
     ('auth0|ghi789', 'Michael', 'Brown', 'Delivered on time...', 4, NOW(), 'PENDING'),
     ('auth0|jkl012', 'Emily', 'Wilson', 'Very knowledgeable...', 5, NOW(), 'APPROVED'),
     ('auth0|mno345', 'Alex', 'Johnson', 'Strong problem-solving...', 4, NOW(), 'PENDING');
+
+
+INSERT INTO contacts (name, last_name, email, comment)
+VALUES
+    ( 'John', 'Doe', 'john.doe@example.com', 'Interested in collaboration.'),
+    ( 'Jane', 'Smith', 'jane.smith@example.com', 'Loved your portfolio website!'),
+    ( 'Michael', 'Brown', 'michael.brown@example.com', 'Looking for backend development services.'),
+    ('Emily', 'Davis', 'emily.davis@example.com', 'Question about your recent project.'),
+    ( 'David', 'Wilson', 'david.wilson@example.com', 'Would like to schedule a meeting.');

@@ -49,3 +49,14 @@ CREATE TABLE testimony (
                            created_at TIMESTAMP DEFAULT NOW(),
                            status VARCHAR(50) DEFAULT 'PENDING'
 );
+
+
+DROP TABLE IF EXISTS contacts;
+
+CREATE TABLE contacts (
+                          id BIGSERIAL PRIMARY KEY,
+                          name VARCHAR(255) NOT NULL,
+                          last_name VARCHAR(255),
+                          email VARCHAR(255),
+                          comment TEXT
+);
