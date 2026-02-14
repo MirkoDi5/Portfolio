@@ -1,28 +1,27 @@
 # syntax=docker/dockerfile:1
 
 ################################################################################
-# 1. BUILD STAGE (Using JDK to compile the code)
+# 1️⃣ BUILD STAGE (compile the Spring Boot app using Gradle)
 ################################################################################
 FROM eclipse-temurin:17-jdk-jammy AS build
 WORKDIR /build
 
-# Copy Gradle executable and wrapper files
-# This allows Docker to run gradle without you installing it inside the image
+# Copy Gradle wrapper and make it executable
 COPY gradlew .
 COPY gradle/ gradle/
+RUN chmod +x gradlew
 
-# Copy the configuration files
+# Copy Gradle config
 COPY build.gradle settings.gradle ./
 
-# Copy the source code
+# Copy source code
 COPY src src/
 
-# Build the application
-# We use 'bootJar' to create the executable and '-x test' to skip failing tests
+# Build the application and skip tests
 RUN ./gradlew bootJar -x test
 
 ################################################################################
-# 2. RUNTIME STAGE (Using JRE to run the app - much smaller and more secure)
+# 2️⃣ RUNTIME STAGE (run the app using JRE for smaller image)
 ################################################################################
 FROM eclipse-temurin:17-jre-jammy AS final
 
@@ -40,10 +39,11 @@ USER appuser
 
 WORKDIR /app
 
-# Copy the JAR from the build stage
-# Gradle puts the jar in /build/libs/ (not target/)
+# Copy the built JAR from the build stage
 COPY --from=build /build/build/libs/*.jar app.jar
 
+# Expose the port your Spring Boot app will use
 EXPOSE 8080
 
-ENTRYPOINT [ "java", "-jar", "app.jar" ]
+# Run the application
+ENTRYPOINT ["java", "-jar", "app.jar"]
