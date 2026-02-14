@@ -1,6 +1,5 @@
 "use client";
 
-
 import React, { useEffect, useState } from "react";
 import Modal from "../components/Modal";
 import { useLanguage } from "../context/LanguageContext";
