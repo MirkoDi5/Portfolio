@@ -1,6 +1,9 @@
 import axios from "axios";
 
-const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/contacts`;
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL
+    ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1/contacts`
+    : "http://localhost:8080/api/v1/contacts";
 
 export interface ContactsRequestDTO {
   name: string;

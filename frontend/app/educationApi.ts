@@ -24,7 +24,10 @@ export interface EducationResponseDTO {
   time?: string;
 }
 
-const API_BASE = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/education`;
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL
+    ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1/education`
+    : "http://localhost:8080/api/v1/education";
 
 export const educationApi = {
   async getAll(token?: string): Promise<Education[]> {
