@@ -24,7 +24,7 @@ export default function WorkPage() {
           const token = await getAccessTokenSilently();
           data = await workApi.getAll(token);
         } else {
-          data = await workApi.getAll(); // Assume API allows unauthenticated fetch
+          data = await workApi.getAll(); 
         }
         setWork(data);
       } catch {
