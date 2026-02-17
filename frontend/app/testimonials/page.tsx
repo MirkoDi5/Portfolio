@@ -128,7 +128,7 @@ export default function TestimonialsPage() {
         <h1 className="text-4xl font-extrabold mb-8 text-center text-purple-900 dark:text-purple-100 tracking-tight">{lang === "fr" ? "Témoignages" : "Testimonials"}</h1>
         {error && <div className="mb-4 p-3 bg-red-100 text-red-800 rounded text-center font-medium shadow">{error}</div>}
         <div className="flex justify-end mb-6">
-          {isAuthenticated && Array.isArray(roles) && roles.includes("user") && (
+          {isAuthenticated && !isAdmin && (
             <button
               className="bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white font-semibold px-6 py-2 rounded-xl shadow-lg transition-colors text-lg"
               onClick={() => setModalOpen(true)}
