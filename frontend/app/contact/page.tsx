@@ -9,7 +9,7 @@ export default function ContactPage() {
   const { user, isLoading, getAccessTokenSilently } = useAuth0();
   const { t } = useLanguage();
   const roles = user && user["https://api.portfolio.com/roles"];
-  const isUser = Array.isArray(roles) && roles.includes("user");
+  // const isUser = Array.isArray(roles) && roles.includes("user");
   const isAdmin = Array.isArray(roles) && roles.includes("admin");
 
   const [form, setForm] = useState({ name: "", lastName: "", email: "", message: "" });
@@ -70,7 +70,8 @@ export default function ContactPage() {
     return <div className="text-center py-12">{t("loading")}</div>;
   }
 
-  if (isUser) {
+  const isAuthenticated = !!user;
+  if (isAuthenticated && !isAdmin) {
     const profanity = getProfanity(form.message);
     return (
       <main className="py-8 px-4 min-h-[80vh] bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 dark:from-blue-900 dark:via-blue-950 dark:to-blue-800 flex items-center justify-center">
@@ -151,7 +152,8 @@ export default function ContactPage() {
     );
   }
 
-  if (isAdmin) {
+  // Removed duplicate isAuthenticated declaration
+  if (isAuthenticated) {
     async function handleDeleteContact(id: string | number) {
       try {
         const token = await getAccessTokenSilently();
