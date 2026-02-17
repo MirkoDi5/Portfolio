@@ -96,23 +96,32 @@ public class SecurityConfig {
     // ✅ Audience Validator
     public static class AudienceValidator implements OAuth2TokenValidator<Jwt> {
 
-        private final String audience;
+        private final String expectedAudience;
 
-        public AudienceValidator(String audience) {
-            this.audience = audience;
+        public AudienceValidator(String expectedAudience) {
+            this.expectedAudience = expectedAudience;
         }
 
         @Override
         public OAuth2TokenValidatorResult validate(Jwt jwt) {
+            List<String> tokenAudiences = jwt.getAudience();
 
-            if (jwt.getAudience() != null && jwt.getAudience().contains(audience)) {
+            // 🔍 DEBUG LOGS: These will show up in your Spring Boot console
+            System.out.println("--- JWT VALIDATION START ---");
+            System.out.println("Expected Audience: " + this.expectedAudience);
+            System.out.println("Token Audiences: " + tokenAudiences);
+
+            if (tokenAudiences != null && tokenAudiences.contains(this.expectedAudience)) {
+                System.out.println("✅ Audience Match Found!");
                 return OAuth2TokenValidatorResult.success();
             }
 
+            // If it fails, we log exactly why
+            System.out.println("❌ Audience Mismatch! Token did not contain: " + this.expectedAudience);
             return OAuth2TokenValidatorResult.failure(
                     new OAuth2Error(
                             "invalid_token",
-                            "The required audience is missing",
+                            "The required audience '" + expectedAudience + "' is missing from " + tokenAudiences,
                             null
                     )
             );
