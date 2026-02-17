@@ -1,0 +1,178 @@
+@startuml
+skinparam style strictuml
+hide footbox
+title System Sequence Diagram: Moderate Product Review
+
+actor Customer
+actor Employee
+participant ":System" as System
+database ":Database" as DB
+
+' =========================
+' SCENARIO 1 — CREATE REVIEW
+' =========================
+group Scenario 1: Create Review
+    note over Customer, System : Precondition: Customer is authenticated
+    Customer -> System : createReview(productId, rating, description)
+
+    ' --- CONTENT VALIDATION ---
+    alt [rating is 0]
+        System -->> Customer : Error: Minimum 1 star required
+    else [description is empty]
+        System -->> Customer : Error: Description is blank
+    else [description contains swear words]
+        System -->> Customer : Error: Inappropriate language detected
+    else [content is valid]
+
+        ' --- DUPLICATE CHECK ---
+        System -> DB : findReview(customerId, productId)
+        DB -->> System : existingReviewData
+
+        alt [review already exists]
+            System -->> Customer : Error: Review already exists
+            System -->> Customer : Display existing review details
+
+            Customer -> System : deleteReview(productId)
+            System -> DB : delete(reviewId)
+            DB -->> System : deleteSuccess
+            System -->> Customer : Confirmation: Old review removed
+
+            ' Explicit second attempt to complete the post
+            Customer -> System : createReview(productId, rating, description)
+            System -> DB : saveReview(customerId, productId, rating, description)
+            DB -->> System : savedReviewData
+            System -->> Customer : Display success and review details
+
+        else [no existing review]
+            System -> DB : saveReview(customerId, productId, rating, description)
+            DB -->> System : savedReviewData
+            System -->> Customer : Display success and review details
+        end
+    end
+end
+
+' =========================
+' SCENARIO 2 — UPDATE REVIEW
+' =========================
+group Scenario 2: Update Review
+    note over Customer, System : Precondition: Customer is authenticated
+    Customer -> System : updateReview(productId, newRating, newDescription)
+
+    ' --- STEP 1: CONTENT VALIDATION ---
+    alt [new rating is 0]
+        System -->> Customer : Error: Minimum 1 star required
+    else [new description is empty]
+        System -->> Customer : Error: Description is blank
+    else [new description contains swear words]
+        System -->> Customer : Error: Inappropriate language detected
+    else [content is valid]
+
+        ' --- STEP 2: EXISTENCE CHECK ---
+        System -> DB : findReview(customerId, productId)
+        DB -->> System : existingReviewData
+
+        alt [review does not exist]
+            ' STEP 3a: Create the review as requested
+            Customer -> System : createReview(productId, newRating, newDescription)
+            System -> DB : saveReview(customerId, productId, newRating, newDescription)
+            DB -->> System : savedReviewData
+
+            ' Now apply the update/edit intent
+            System -> DB : update(reviewId, newRating, newDescription)
+            DB -->> System : updatedReviewData
+            System -->> Customer : Display success and updated details
+
+        else [review already exists]
+            ' STEP 3b: Normal edit flow
+            System -> DB : update(reviewId, newRating, newDescription)
+            DB -->> System : updatedReviewData
+            System -->> Customer : Display updated review details
+        end
+    end
+end
+
+' =========================
+' SCENARIO 3 — DELETE REVIEW
+' =========================
+group Scenario 3: Delete Review
+    note over Customer, System : Precondition: Customer is authenticated
+    Customer -> System : deleteReview(productId)
+
+    ' --- STEP 1: EXISTENCE CHECK ---
+    System -> DB : findReview(customerId, productId)
+    DB -->> System : reviewData
+
+    alt [review exists]
+        System -> DB : delete(reviewId)
+        DB -->> System : deleteSuccess
+        System -->> Customer : Confirmation: Review removed
+
+    else [review not found]
+        Customer -> System : createReview(productId, rating, description)
+        System -> DB : saveReview(customerId, productId, rating, description)
+        DB -->> System : savedReviewData
+
+        System -> DB : delete(reviewId)
+        DB -->> System : deleteSuccess
+        System -->> Customer : Confirmation: Review created and then removed
+    end
+end
+
+' =========================
+' SCENARIO 4 — Enable/Disable Review
+' =========================
+group Scenario 4: Enable/Disable Review
+    note over Employee, System : Precondition: Employee is authenticated
+    note over Customer, System : Precondition: Customer is authenticated
+
+    ' --- PHASE 1: DISABLE ---
+    Employee -> System : toggleReviewEnabled(productId, enabledFlag = false)
+    System -> DB : findReviewById(productId)
+    DB -->> System : reviewData
+
+    alt [review does not exist]
+        Customer -> System : createReview(productId, rating, description)
+        System -> DB : saveReview(customerId, productId, rating, description)
+        DB -->> System : savedReviewData
+
+        System -> DB : updateEnabledStatus(productId, enabledFlag = false)
+        DB -->> System : updatedReviewData
+        System -->> Employee : Confirmation: Created and DISABLED
+    else [review exists]
+        System -> DB : updateEnabledStatus(productId, enabledFlag = false)
+        DB -->> System : updatedReviewData
+        System -->> Employee : Confirmation: Review is now DISABLED
+    end
+
+    ' --- VERIFICATION: CUSTOMER VIEW (HIDDEN) ---
+    Customer -> System : getReview(productId)
+    System -> DB : findReviewById(productId)
+    DB -->> System : reviewData (enabled = false)
+    System -->> Customer : Error: Review is hidden or unavailable
+
+    ' --- PHASE 2: ENABLE ---
+    Employee -> System : toggleReviewEnabled(productId, enabledFlag = true)
+    System -> DB : findReviewById(productId)
+    DB -->> System : reviewData
+
+    alt [review does not exist]
+        Customer -> System : createReview(productId, rating, description)
+        System -> DB : saveReview(customerId, productId, rating, description)
+        DB -->> System : savedReviewData
+
+        System -> DB : updateEnabledStatus(productId, enabledFlag = true)
+        DB -->> System : updatedReviewData
+        System -->> Employee : Confirmation: Created and ENABLED
+    else [review exists]
+        System -> DB : updateEnabledStatus(productId, enabledFlag = true)
+        DB -->> System : updatedReviewData
+        System -->> Employee : Confirmation: Review is now ENABLED
+    end
+
+    ' --- VERIFICATION: CUSTOMER VIEW (VISIBLE) ---
+    Customer -> System : getReview(productId)
+    System -> DB : findReviewById(productId)
+    DB -->> System : reviewData (enabled = true)
+    System -->> Customer : Display review details
+end
+@enduml
