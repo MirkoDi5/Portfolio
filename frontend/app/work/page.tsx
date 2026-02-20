@@ -61,11 +61,17 @@ export default function WorkPage() {
         <Modal
           isOpen={openIdx !== null}
           onClose={() => setOpenIdx(null)}
-          title={openIdx !== null && work[openIdx] ? (work[openIdx].name || work[openIdx].workName) : ""}
+          title={typeof t('deleteWorkConfirmTitle') === 'string' && t('deleteWorkConfirmTitle') ? t('deleteWorkConfirmTitle') : 'Are you sure you want to delete this work experience?'}
         >
           {openIdx !== null && work[openIdx] && (
             <div className="flex flex-col items-center">
-              <div className="text-lg font-semibold mb-2 text-zinc-900 dark:text-zinc-50">{work[openIdx].description}</div>
+              <div className="text-lg font-semibold mb-2 text-zinc-900 dark:text-zinc-50">
+                {(() => {
+                  const translation = typeof t('deleteWorkNameRemoved') === 'string' && t('deleteWorkNameRemoved') ? t('deleteWorkNameRemoved') : '"{{name}}" will be permanently removed from your work experience list.';
+                  const name = work[openIdx].name || work[openIdx].workName || '';
+                  return translation.replace("{{name}}", name);
+                })()}
+              </div>
               {/* Add more details if available */}
             </div>
           )}

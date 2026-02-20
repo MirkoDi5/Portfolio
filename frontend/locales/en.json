@@ -1,7 +1,14 @@
 {
+      "logout": "Logout",
+    "signUp": "Sign Up",
+    "login": "Login",
+  "deleteWorkConfirmTitle": "Are you sure you want to delete this work experience?",
+  "deleteWorkNameRemoved": "\"{{name}}\" will be permanently removed from your work experience list.",
+  "deleteSkillNameRemoved": "\"{{name}}\" will be permanently removed from your skills list.",
   "home": "Home",
   "projects": "Projects",
   "about": "About",
+  "deleteEducationNameRemoved": "\"{{name}}\" will be permanently removed from your education history.",
   "testimonials": "Testimonials",
   "contact": "Contact",
   "language": "Language",
@@ -18,6 +25,9 @@
   "projectName": "Name",
   "projectDescription": "Description",
   "projectLink": "Link",
+  "projectProductionLink": "Production Link",
+  "viewGithub": "View Github",
+  "viewWebsite": "View Website",
   "cancel": "Cancel",
   "save": "Save",
   "loadingProjects": "Loading projects...",
@@ -83,7 +93,13 @@
   "cvDescription": "Download my up-to-date CV in Word format.",
   "downloadNow": "Download Now",
   "projectsDescription": "Explore my portfolio projects and see what I have built.",
-  "seeProjects": "See Projects"
+  "seeProjects": "See Projects",
+  "deleteProjectConfirm": "Are you sure you want to delete this project?",
+  "deleteProjectNameConfirm": "\"{{name}}\" will be permanently deleted from your projects list.",
+  "deleteProjectPermanent": "This project will be permanently deleted from your projects list.",
+  "deleteSkillConfirm": "Are you sure you want to delete this skill?",
+  "deleteSkillNameConfirm": "\"{{name}}\" will be permanently deleted from your skills list.",
+  "deleteSkillPermanent": "This skill will be permanently deleted from your skills list."
 }
 
 

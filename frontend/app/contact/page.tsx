@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import ConfirmDeletePopup from "../components/ConfirmDeletePopup";
+import SuccessPopup from "../components/SuccessPopup";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth0 } from "@auth0/auth0-react";
 import { contactsApi, ContactsResponseDTO } from "../contactsApi";
@@ -16,6 +18,11 @@ export default function ContactPage() {
   const [contacts, setContacts] = useState<ContactsResponseDTO[]>([]);
   const [contactsLoading, setContactsLoading] = useState(false);
   const [contactsError, setContactsError] = useState<string | null>(null);
+  // Delete popup state for contacts (must be at top level)
+  const [contactToDelete, setContactToDelete] = useState<string | number | null>(null);
+  const [deletingContact, setDeletingContact] = useState(false);
+  // Success popup for contact creation
+  const [showSuccess, setShowSuccess] = useState(false);
 
   // Only fetch contacts when admin status changes or on mount, not on language change
   useEffect(() => {
@@ -54,6 +61,7 @@ export default function ContactPage() {
           comment: form.message,
         }, token);
         setForm({ name: "", lastName: "", email: "", message: "" });
+        setShowSuccess(true);
       } catch {
         alert(t("failedToSendMessage") || "Failed to send message. Please try again.");
       }
@@ -147,19 +155,36 @@ export default function ContactPage() {
             </form>
           </div>
         </div>
+        <SuccessPopup
+          open={showSuccess}
+          title="Success!"
+          emoji="🎉"
+          message="Contact has been successfully sent"
+          subtext="Thank you for reaching out. I will get back to you soon."
+          buttonColorClass="bg-blue-600 hover:bg-blue-700"
+          onClose={() => setShowSuccess(false)}
+        />
       </main>
     );
   }
 
   if (isAdmin) {
-    async function handleDeleteContact(id: string | number) {
+    function handleDeleteContact(id: string | number) {
+      setContactToDelete(id);
+    }
+
+    async function confirmDeleteContact() {
+      if (!contactToDelete) return;
+      setDeletingContact(true);
       try {
         const token = await getAccessTokenSilently();
-        await contactsApi.deleteContact(String(id), token);
-        setContacts((prev) => prev.filter((c) => String(c.id) !== String(id)));
+        await contactsApi.deleteContact(String(contactToDelete), token);
+        setContacts((prev) => prev.filter((c) => String(c.id) !== String(contactToDelete)));
+        setContactToDelete(null);
       } catch {
         alert(t("failedToDeleteContact") || "Failed to delete contact.");
       }
+      setDeletingContact(false);
     }
     return (
       <main className="pt-0 px-4 min-h-[80vh] bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200 dark:from-blue-900 dark:via-blue-950 dark:to-blue-800 flex items-start justify-center">
@@ -211,6 +236,18 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
+        <ConfirmDeletePopup
+          open={contactToDelete !== null}
+          title={t("deleteContact") || "Delete Contact?"}
+          description={contactToDelete !== null ? (
+            contacts.find(c => String(c.id) === String(contactToDelete))?.name
+              ? `"${contacts.find(c => String(c.id) === String(contactToDelete))?.name} ${contacts.find(c => String(c.id) === String(contactToDelete))?.lastName}" will be permanently deleted from your contacts list.`
+              : "This contact will be permanently deleted from your contacts list."
+          ) : ""}
+          loading={deletingContact}
+          onCancel={() => setContactToDelete(null)}
+          onConfirm={confirmDeleteContact}
+        />
       </main>
     );
   }

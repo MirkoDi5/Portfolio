@@ -1,4 +1,6 @@
 "use client";
+import SkillDeletePopup from "../components/SkillDeletePopup";
+import ConfirmDeletePopup from "../components/ConfirmDeletePopup";
 import React, { useEffect, useState } from "react";
 import { FaJs, FaReact, FaNodeJs, FaCss3Alt, FaBuilding, FaBriefcase, FaFilePdf } from "react-icons/fa";
 import { SiTypescript } from "react-icons/si";
@@ -46,6 +48,15 @@ function isEditModal(modal: { type: 'skill' | 'work' | 'education', item: { name
 }
 
 export default function AboutPage() {
+  // Skill delete popup state
+  const [skillToDeleteIdx, setSkillToDeleteIdx] = useState<number | null>(null);
+  const [deletingSkill, setDeletingSkill] = useState(false);
+  // Work delete popup state
+  const [workToDeleteIdx, setWorkToDeleteIdx] = useState<number | null>(null);
+  const [deletingWork, setDeletingWork] = useState(false);
+  // Education delete popup state
+  const [educationToDeleteIdx, setEducationToDeleteIdx] = useState<number | null>(null);
+  const [deletingEducation, setDeletingEducation] = useState(false);
   const [openModal, setOpenModal] = useState<string | null>(null);
   const [editModal, setEditModal] = useState<{
     type: 'skill' | 'work' | 'education',
@@ -61,8 +72,15 @@ export default function AboutPage() {
   const [educationLoading, setEducationLoading] = useState(false);
   const [educationError, setEducationError] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<{ name: string; level?: string } | WorkExperience | Education | null>(null);
-
   const { t } = useLanguage();
+  const [aboutTitle, setAboutTitle] = useState(t('studentTitle'));
+  const [aboutText, setAboutText] = useState(t('aboutText'));
+  const [aboutSectionTitle, setAboutSectionTitle] = useState(t('aboutMe'));
+  const [aboutSectionTitleTemp, setAboutSectionTitleTemp] = useState(aboutSectionTitle);
+  const [aboutTitleTemp, setAboutTitleTemp] = useState(aboutTitle);
+  const [aboutTextTemp, setAboutTextTemp] = useState(aboutText);
+  const [aboutEditOpen, setAboutEditOpen] = useState(false);
+
   const { getAccessTokenSilently, isAuthenticated, user } = useAuth0();
   console.log('Auth0 user object:', user);
   // Use the actual roles claim from the JWT
@@ -136,7 +154,15 @@ export default function AboutPage() {
       }
     })();
   }, [getAccessTokenSilently, isAuthenticated]);
-  // ...existing code...
+  // Load About Me section title, title, and text from localStorage if available
+  useEffect(() => {
+    const storedSectionTitle = localStorage.getItem('aboutSectionTitle');
+    const storedTitle = localStorage.getItem('aboutTitle');
+    const storedText = localStorage.getItem('aboutText');
+    if (storedSectionTitle) setAboutSectionTitle(storedSectionTitle);
+    if (storedTitle) setAboutTitle(storedTitle);
+    if (storedText) setAboutText(storedText);
+  }, []);
 
   useEffect(() => {
     if (editModal) {
@@ -158,7 +184,7 @@ export default function AboutPage() {
     if (!isAuthenticated) return;
     const token = await getAccessTokenSilently();
     if (editModal.type === 'skill' && isSkill(editForm)) {
-      const isEdit = typeof (editForm as Skill).id === 'number' || typeof (editForm as Skill).id === 'string';
+      const isEdit = !!(editForm as Skill).id;
       if (isEdit) {
         await skillsApi.updateSkill((editForm as Skill).id.toString(), {
           skillId: (editForm as Skill).skillId,
@@ -260,6 +286,13 @@ export default function AboutPage() {
     setEditModal(null);
   };
 
+  const handleAboutEdit = () => {
+    setAboutSectionTitleTemp(localStorage.getItem('aboutSectionTitle') || aboutSectionTitle);
+    setAboutTitleTemp(localStorage.getItem('aboutTitle') || aboutTitle);
+    setAboutTextTemp(localStorage.getItem('aboutText') || aboutText);
+    setAboutEditOpen(true);
+  };
+
   return (
     <main className="py-20 px-4 min-h-[100vh] flex items-start justify-start bg-gradient-to-br from-zinc-100 via-blue-50 to-zinc-200 dark:from-zinc-900 dark:via-zinc-950 dark:to-blue-950">
       <div className="w-full flex flex-col md:flex-row gap-14">
@@ -269,11 +302,55 @@ export default function AboutPage() {
             <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center shadow-lg mb-4 mx-auto md:mx-0">
               <span className="text-5xl text-white font-bold">👨‍💻</span>
             </div>
-            <h2 className="text-2xl font-bold text-blue-900 dark:text-blue-200 mb-1">{t('aboutMe')}</h2>
-            <div className="text-blue-600 dark:text-blue-400 text-sm font-medium mb-2">{t('studentTitle')}</div>
-            <p className="text-lg text-zinc-700 dark:text-zinc-200 leading-relaxed mb-4 w-full">{t('aboutText')}</p>
+            <h2 className="text-2xl font-bold text-blue-900 dark:text-blue-200 mb-1 flex items-center gap-2">{aboutSectionTitle}
+              {isAdmin && (
+                <button
+                  className="ml-2 px-3 py-1 rounded bg-blue-500 text-white text-sm font-semibold hover:bg-blue-600 transition-colors"
+                  onClick={handleAboutEdit}
+                  aria-label="Edit about text"
+                >Edit</button>
+              )}
+            </h2>
+            <div className="text-blue-600 dark:text-blue-400 text-sm font-medium mb-2">{aboutTitle}</div>
+            <p className="text-lg text-zinc-700 dark:text-zinc-200 leading-relaxed mb-4 w-full">{aboutText}</p>
           </div>
         </aside>
+        {aboutEditOpen && (
+          <div className="fixed inset-0 flex items-center justify-center bg-transparent z-50">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl p-10 w-full max-w-lg border border-blue-200 dark:border-blue-700 animate-fade-in">
+              <h2 className="text-2xl font-extrabold mb-6 text-blue-700 dark:text-blue-300 text-center tracking-tight">Edit About Me</h2>
+              <div className="mb-6">
+                <label className="block mb-2 font-semibold text-zinc-700 dark:text-zinc-200">Section Title</label>
+                <input
+                  className="w-full border-2 border-blue-200 dark:border-blue-700 rounded-lg p-3 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-zinc-800 dark:text-white transition"
+                  value={aboutSectionTitleTemp}
+                  onChange={e => setAboutSectionTitleTemp(e.target.value)}
+                />
+              </div>
+              <div className="mb-6">
+                <label className="block mb-2 font-semibold text-zinc-700 dark:text-zinc-200">Title</label>
+                <input
+                  className="w-full border-2 border-blue-200 dark:border-blue-700 rounded-lg p-3 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-zinc-800 dark:text-white transition"
+                  value={aboutTitleTemp}
+                  onChange={e => setAboutTitleTemp(e.target.value)}
+                />
+              </div>
+              <div className="mb-6">
+                <label className="block mb-2 font-semibold text-zinc-700 dark:text-zinc-200">About Me Text</label>
+                <textarea
+                  className="w-full border-2 border-blue-200 dark:border-blue-700 rounded-lg p-3 text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-zinc-800 dark:text-white transition resize-none"
+                  value={aboutTextTemp}
+                  onChange={e => setAboutTextTemp(e.target.value)}
+                  rows={5}
+                />
+              </div>
+              <div className="flex gap-4 justify-end">
+                <button className="px-5 py-2 rounded-lg bg-gray-200 text-gray-800 font-semibold hover:bg-gray-300 transition" onClick={() => setAboutEditOpen(false)}>Cancel</button>
+                <button className="px-5 py-2 rounded-lg bg-blue-600 text-white font-bold shadow hover:bg-blue-700 transition" onClick={() => { setAboutSectionTitle(aboutSectionTitleTemp); setAboutTitle(aboutTitleTemp); setAboutText(aboutTextTemp); localStorage.setItem('aboutSectionTitle', aboutSectionTitleTemp); localStorage.setItem('aboutTitle', aboutTitleTemp); localStorage.setItem('aboutText', aboutTextTemp); setAboutEditOpen(false); }}>Save</button>
+              </div>
+            </div>
+          </div>
+        )}
         {/* Main Cards Section */}
         <section className="flex-1 w-full flex flex-col gap-10 items-center">
           {/* Skills Card */}
@@ -304,7 +381,14 @@ export default function AboutPage() {
                         <button className="p-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 transition ml-2" title={t('edit')} onClick={() => setEditModal({ type: 'skill', item: skill })}>
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FFC107" width="20" height="20"><path d="M3 17.25V21h3.75l11.06-11.06-3.75-3.75L3 17.25zm17.71-10.04a1.003 1.003 0 0 0 0-1.42l-2.5-2.5a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.83-1.83z" /></svg>
                         </button>
-                        <button className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900 transition text-red-500 text-lg font-bold" title={t('delete')} onClick={async () => { try { if (!isAuthenticated) return; const token = await getAccessTokenSilently(); await skillsApi.deleteSkill(skill.id, token); setSkills((prev) => prev.filter((_, i) => i !== idx)); } catch {} }} aria-label={t('delete')}>&times;</button>
+                        <button
+                          className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900 transition text-red-500 text-lg font-bold"
+                          title={t('delete')}
+                          onClick={() => setSkillToDeleteIdx(idx)}
+                          aria-label={t('delete')}
+                        >
+                          &times;
+                        </button>
                       </>
                     )}
                   </li>
@@ -312,6 +396,66 @@ export default function AboutPage() {
               </ul>
             )}
           </div>
+          {/* Render SkillDeletePopup globally at the end of main content to ensure it overlays the whole screen */}
+          <SkillDeletePopup
+            open={skillToDeleteIdx !== null}
+            skillName={skillToDeleteIdx !== null ? skills[skillToDeleteIdx]?.name || '' : ''}
+            loading={deletingSkill}
+            onCancel={() => setSkillToDeleteIdx(null)}
+            onConfirm={async () => {
+              if (skillToDeleteIdx === null) return;
+              setDeletingSkill(true);
+              try {
+                if (!isAuthenticated) return;
+                const token = await getAccessTokenSilently();
+                const skill = skills[skillToDeleteIdx];
+                await skillsApi.deleteSkill(skill.id, token);
+                setSkills((prev) => prev.filter((_, i) => i !== skillToDeleteIdx));
+                setSkillToDeleteIdx(null);
+              } catch {}
+              setDeletingSkill(false);
+            }}
+          />
+          <ConfirmDeletePopup
+            open={workToDeleteIdx !== null}
+            title="Are you sure you want to delete this work experience?"
+            description={workToDeleteIdx !== null ? `"${workExperience[workToDeleteIdx]?.name || ''}" will be permanently removed from your work experience list.` : ''}
+            loading={deletingWork}
+            onCancel={() => setWorkToDeleteIdx(null)}
+            onConfirm={async () => {
+              if (workToDeleteIdx === null) return;
+              setDeletingWork(true);
+              try {
+                if (!isAuthenticated) return;
+                const token = await getAccessTokenSilently();
+                const job = workExperience[workToDeleteIdx];
+                await workApi.deleteWork(job.id, token);
+                setWorkExperience((prev) => prev.filter((_, i) => i !== workToDeleteIdx));
+                setWorkToDeleteIdx(null);
+              } catch {}
+              setDeletingWork(false);
+            }}
+          />
+          <ConfirmDeletePopup
+            open={educationToDeleteIdx !== null}
+            title="Are you sure you want to delete this education?"
+            description={educationToDeleteIdx !== null ? `"${education[educationToDeleteIdx]?.schoolName || ''}" will be permanently removed from your education list.` : ''}
+            loading={deletingEducation}
+            onCancel={() => setEducationToDeleteIdx(null)}
+            onConfirm={async () => {
+              if (educationToDeleteIdx === null) return;
+              setDeletingEducation(true);
+              try {
+                if (!isAuthenticated) return;
+                const token = await getAccessTokenSilently();
+                const edu = education[educationToDeleteIdx];
+                await educationApi.deleteEducation(edu.id, token);
+                setEducation((prev) => prev.filter((_, i) => i !== educationToDeleteIdx));
+                setEducationToDeleteIdx(null);
+              } catch {}
+              setDeletingEducation(false);
+            }}
+          />
           {/* Work Card */}
           <div className="bg-gradient-to-br from-emerald-100/80 to-emerald-200/80 dark:from-zinc-800/80 dark:to-emerald-900/80 rounded-2xl shadow border border-emerald-100 dark:border-emerald-800 p-8 flex flex-col w-full h-[260px] max-h-[280px] transition-transform hover:-translate-y-1 hover:shadow-xl text-lg">
             <div className="flex items-center justify-between mb-4">
@@ -338,7 +482,7 @@ export default function AboutPage() {
                           <button className="p-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 transition ml-auto" title={t('edit')} onClick={() => setEditModal({ type: 'work', item: job })}>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-yellow-500"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 3.487a2.25 2.25 0 1 1 3.182 3.182L7.5 19.213l-4 1 1-4 13.362-13.726z" /></svg>
                           </button>
-                          <button className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900 transition text-red-500 text-lg font-bold" title={t('delete')} onClick={async () => { try { if (!isAuthenticated) return; const token = await getAccessTokenSilently(); await workApi.deleteWork(job.id, token); setWorkExperience((prev) => prev.filter((_, i) => i !== idx)); } catch {} }} aria-label={t('delete')}>&times;</button>
+                          <button className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900 transition text-red-500 text-lg font-bold" title={t('delete')} onClick={() => setWorkToDeleteIdx(idx)} aria-label={t('delete')}>&times;</button>
                         </>
                       )}
                     </div>
@@ -379,7 +523,7 @@ export default function AboutPage() {
                           <button className="p-1 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 transition ml-auto" title={t('edit')} onClick={() => setEditModal({ type: 'education', item })}>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-yellow-500"><path strokeLinecap="round" strokeLinejoin="round" d="M16.862 3.487a2.25 2.25 0 1 1 3.182 3.182L7.5 19.213l-4 1 1-4 13.362-13.726z" /></svg>
                           </button>
-                          <button className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900 transition text-red-500 text-lg font-bold" title={t('delete')} onClick={async () => { try { if (!isAuthenticated) return; const token = await getAccessTokenSilently(); await educationApi.deleteEducation(item.id, token); setEducation((prev) => prev.filter((_, i) => i !== idx)); } catch {} }} aria-label={t('delete')}>&times;</button>
+                          <button className="p-1 rounded hover:bg-red-100 dark:hover:bg-red-900 transition text-red-500 text-lg font-bold" title={t('delete')} onClick={() => setEducationToDeleteIdx(idx)} aria-label={t('delete')}>&times;</button>
                         </>
                       )}
                     </div>
@@ -620,7 +764,7 @@ export default function AboutPage() {
                     <div className="mb-2 font-semibold">{t('description')}</div>
                     <textarea
                       name="description"
-                      className="w-full border rounded p-2"
+                      className="w-full border rounded p-2 resize-none"
                       value={editForm.description}
                       onChange={handleEditChange}
                       required
@@ -670,6 +814,7 @@ export default function AboutPage() {
   );
 }
 
+
 // Use type guards for editForm fields
 function isSkill(item: unknown): item is Skill {
   return typeof item === 'object' && item !== null && 'name' in item && 'level' in item && 'id' in item;
@@ -680,5 +825,3 @@ function isWork(item: unknown): item is WorkExperience {
 function isEducation(item: unknown): item is Education {
   return typeof item === 'object' && item !== null && 'schoolName' in item;
 }
-
-// ...existing code...

@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import ConfirmDeletePopup from "../components/ConfirmDeletePopup";
 import { useAuth0 } from "@auth0/auth0-react";
 import { testimonyApi, TestimonyResponseDTO, TestimonyRequestDTO } from "../testimonyApi";
 import AddTestimonyModal from "../components/AddTestimonyModal";
@@ -11,8 +12,11 @@ function getInitials(firstName: string, lastName: string) {
 }
 
 export default function TestimonialsPage() {
+  // Delete popup state for testimonials
+  const [testimonialToDelete, setTestimonialToDelete] = useState<number | null>(null);
+  const [deletingTestimonial, setDeletingTestimonial] = useState(false);
   const { lang } = useLanguage();
-  const { user, getAccessTokenSilently, isAuthenticated } = useAuth0();
+  const { user, getAccessTokenSilently, isAuthenticated, loginWithRedirect } = useAuth0();
   const roles = user && user["https://api.portfolio.com/roles"];
   const isAdmin = Array.isArray(roles) && roles.includes("admin");
   const [testimonials, setTestimonials] = useState<TestimonyResponseDTO[]>([]);
@@ -106,17 +110,22 @@ export default function TestimonialsPage() {
   }
 
   async function handleDelete(id: number) {
-    if (!isAdmin) return;
-    setActionLoading(true);
+    setTestimonialToDelete(id);
+  }
+
+  async function confirmDeleteTestimonial() {
+    if (!isAdmin || testimonialToDelete === null) return;
+    setDeletingTestimonial(true);
     setError("");
     try {
       const token = await getAccessTokenSilently();
-      await testimonyApi.deleteTestimony(id, token);
-      setTestimonials(ts => ts.filter(t => t.id !== id));
+      await testimonyApi.deleteTestimony(testimonialToDelete, token);
+      setTestimonials(ts => ts.filter(t => t.id !== testimonialToDelete));
+      setTestimonialToDelete(null);
     } catch {
       setError("Failed to delete testimonial");
     } finally {
-      setActionLoading(false);
+      setDeletingTestimonial(false);
     }
   }
 
@@ -128,10 +137,16 @@ export default function TestimonialsPage() {
         <h1 className="text-4xl font-extrabold mb-8 text-center text-purple-900 dark:text-purple-100 tracking-tight">{lang === "fr" ? "Témoignages" : "Testimonials"}</h1>
         {error && <div className="mb-4 p-3 bg-red-100 text-red-800 rounded text-center font-medium shadow">{error}</div>}
         <div className="flex justify-end mb-6">
-          {isAuthenticated && !isAdmin && (
+          {(!isAuthenticated || (isAuthenticated && !isAdmin)) && (
             <button
               className="bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white font-semibold px-6 py-2 rounded-xl shadow-lg transition-colors text-lg"
-              onClick={() => setModalOpen(true)}
+              onClick={() => {
+                if (!isAuthenticated) {
+                  loginWithRedirect();
+                } else {
+                  setModalOpen(true);
+                }
+              }}
             >
               {lang === "fr" ? "+ Ajouter un témoignage" : "+ Add Testimony"}
             </button>
@@ -190,6 +205,18 @@ export default function TestimonialsPage() {
           </div>
         </section>
       </div>
+      <ConfirmDeletePopup
+        open={testimonialToDelete !== null}
+        title={lang === "fr" ? "Supprimer le témoignage ?" : "Delete Testimonial?"}
+        description={testimonialToDelete !== null ? (
+          testimonials.find(t => t.id === testimonialToDelete)?.comment
+            ? `"${testimonials.find(t => t.id === testimonialToDelete)?.comment}" will be permanently deleted from your testimonials list.`
+            : "This testimonial will be permanently deleted from your testimonials list."
+        ) : ""}
+        loading={deletingTestimonial}
+        onCancel={() => setTestimonialToDelete(null)}
+        onConfirm={confirmDeleteTestimonial}
+      />
     </main>
   );
 }

@@ -1,7 +1,14 @@
 {
+      "logout": "Déconnexion",
+    "signUp": "S'inscrire",
+    "login": "Connexion",
+  "deleteWorkConfirmTitle": "Êtes-vous sûr de vouloir supprimer cette expérience professionnelle ?",
+  "deleteWorkNameRemoved": "\"{{name}}\" sera définitivement retiré de votre liste d'expérience professionnelle.",
+  "deleteSkillNameRemoved": "\"{{name}}\" sera définitivement retirée de votre liste de compétences.",
   "home": "Accueil",
   "projects": "Projets",
   "about": "À propos",
+  "deleteEducationNameRemoved": "\"{{name}}\" sera définitivement retiré de votre parcours \u00e9ducatif.",
   "testimonials": "Témoignages",
   "contact": "Contact",
   "language": "Langue",
@@ -18,6 +25,9 @@
   "projectName": "Nom",
   "projectDescription": "Description",
   "projectLink": "Lien",
+  "projectProductionLink": "Lien de production",
+  "viewGithub": "Voir Github",
+  "viewWebsite": "Voir le site",
   "cancel": "Annuler",
   "save": "Enregistrer",
   "loadingProjects": "Chargement des projets...",
@@ -83,5 +93,11 @@
   "cvDescription": "Téléchargez mon CV à jour au format Word.",
   "downloadNow": "Télécharger maintenant",
   "projectsDescription": "Découvrez mes projets de portfolio et voyez ce que j'ai réalisé.",
-  "seeProjects": "Voir les projets"
+  "seeProjects": "Voir les projets",
+  "deleteProjectConfirm": "Êtes-vous sûr de vouloir supprimer ce projet ?",
+  "deleteProjectNameConfirm": "\"{{name}}\" sera définitivement supprimé de votre liste de projets.",
+  "deleteSkillConfirm": "Êtes-vous sûr de vouloir supprimer cette compétence ?",
+  "deleteSkillNameConfirm": "\"{{name}}\" sera définitivement supprimée de votre liste de compétences.",
+  "deleteSkillPermanent": "Cette compétence sera définitivement supprimée de votre liste de compétences.",
+  "deleteProjectPermanent": "Ce projet sera définitivement supprimé de votre liste de projets."
 }

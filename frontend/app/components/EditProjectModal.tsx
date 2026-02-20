@@ -89,7 +89,7 @@ export default function EditProjectModal({ isOpen, onClose, project, onSave, isA
             />
           </div>
           <div>
-            <label className="block text-teal-700 dark:text-teal-200 mb-1 font-semibold">Production Link (optional)</label>
+            <label className="block text-teal-700 dark:text-teal-200 mb-1 font-semibold">{t('projectProductionLink')} (optional)</label>
             <input
               type="url"
               name="prodLink"
