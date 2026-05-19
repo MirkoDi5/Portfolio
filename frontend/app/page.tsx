@@ -108,7 +108,7 @@ export default function Home() {
         )}
         <div className="flex flex-row gap-2 md:gap-4 justify-center animate-fade-in delay-300 flex-wrap">
           <a
-            href="https://github.com/"
+            href="https://github.com/MirkoDi5"
             target="_blank"
             rel="noopener noreferrer"
             className="rounded-full border border-teal-300 dark:border-blue-700 p-4 text-3xl text-teal-900 dark:text-teal-100 bg-white dark:bg-zinc-900 hover:bg-teal-50 dark:hover:bg-blue-900 transition-colors shadow flex items-center justify-center"
